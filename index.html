@@ -191,7 +191,7 @@
       </div>
       <div class="half" id="halfR">
         <div class="big" id="bigR">Bereit?</div>
-        <div class="small" id="smallR">Taste zum Starten</div>
+        <div class="small" id="smallR">Klick oder Leertaste zum Starten</div>
         <div class="keycap" id="keyR" hidden>L</div>
       </div>
     </div>
@@ -375,7 +375,6 @@
   function duelReact(who) {
     if (duelReacted[who] != null) return;
     duelReacted[who] = Math.round(performance.now() - greenAt);
-    var other = who === "L" ? "R" : "L";
     // first valid reaction wins the round immediately
     duelScore[who]++;
     phase = "result";
