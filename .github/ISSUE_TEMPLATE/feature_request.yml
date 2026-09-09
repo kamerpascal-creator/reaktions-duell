@@ -1,0 +1,34 @@
+name: Feature-Vorschlag
+description: Eine Idee oder Verbesserung vorschlagen
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: Welches Problem löst der Vorschlag? Woran hakt es aktuell?
+    validations:
+      required: true
+  - type: textarea
+    id: loesung
+    attributes:
+      label: Vorgeschlagene Lösung
+    validations:
+      required: true
+  - type: textarea
+    id: alternativen
+    attributes:
+      label: Alternativen
+      description: Andere Ansätze, die du erwogen hast
+  - type: checkboxes
+    id: rahmen
+    attributes:
+      label: Rahmen
+      options:
+        - label: Der Vorschlag kommt ohne Build-Schritt und ohne externe Abhängigkeiten aus (reines HTML/CSS/Vanilla-JS in einer index.html).
+          required: true
+  - type: textarea
+    id: kontext
+    attributes:
+      label: Weiterer Kontext

@@ -1,0 +1,55 @@
+name: Bug melden
+description: Etwas funktioniert nicht wie erwartet
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Danke, dass du dir die Zeit nimmst, einen Fehler zu melden.
+  - type: textarea
+    id: beschreibung
+    attributes:
+      label: Beschreibung
+      description: Was ist passiert und was hast du stattdessen erwartet?
+    validations:
+      required: true
+  - type: textarea
+    id: schritte
+    attributes:
+      label: Schritte zum Reproduzieren
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: modus
+    attributes:
+      label: Modus
+      options:
+        - Solo
+        - Duell (2 Spieler)
+        - Beide / unklar
+    validations:
+      required: true
+  - type: input
+    id: umgebung
+    attributes:
+      label: Browser und Betriebssystem
+      placeholder: "z. B. Chrome 128 / Windows 11, Safari 17 / iOS 18"
+    validations:
+      required: true
+  - type: dropdown
+    id: quelle
+    attributes:
+      label: Wo aufgetreten?
+      options:
+        - Online-Version (GitHub Pages)
+        - Lokale index.html
+    validations:
+      required: true
+  - type: textarea
+    id: weiteres
+    attributes:
+      label: Screenshots / weitere Hinweise
