@@ -2,6 +2,8 @@
 
 Ein kleines Reaktionszeit-Spiel (Solo & Duell) in einer einzigen HTML-Datei.
 
+**▶ Online spielen: https://kamerpascal-creator.github.io/reaktions-duell/**
+
 ![Screenshot des Spiels im Solo-Modus](docs/screenshot.png)
 
 ## Starten
