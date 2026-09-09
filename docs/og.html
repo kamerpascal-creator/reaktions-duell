@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<!--
+  Quelle für docs/og-image.png (Social-Preview, 1200x630).
+  Rendern:
+    chrome --headless=new --disable-gpu --hide-scrollbars \
+      --window-size=1200,630 --screenshot="docs/og-image.png" docs/og.html
+-->
+<style>
+  :root {
+    --bg: #0f1220;
+    --panel: #1a1f36;
+    --panel-2: #232a4a;
+    --text: #e8ebff;
+    --muted: #9aa3c7;
+    --accent: #6c7cff;
+    --wait: #d23b52;
+    --go: #2fbf71;
+    --gold: #ffd15c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background:
+      radial-gradient(900px 500px at 78% -10%, rgba(108,124,255,0.28), transparent 60%),
+      radial-gradient(700px 500px at 8% 115%, rgba(47,191,113,0.18), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font: 400 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 78px 88px;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 30px;
+  }
+  .bolt {
+    font-size: 92px;
+    line-height: 1;
+    filter: drop-shadow(0 6px 20px rgba(255,209,92,0.35));
+  }
+  h1 {
+    font-size: 96px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+  .tagline {
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--muted);
+    max-width: 900px;
+    margin-bottom: 52px;
+  }
+  .bar {
+    display: flex;
+    width: 720px;
+    height: 90px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--panel-2);
+  }
+  .bar > div {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.95);
+  }
+  .bar .wait { background: var(--wait); }
+  .bar .go { background: var(--go); }
+  .url {
+    position: absolute;
+    right: 88px;
+    bottom: 60px;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .modes {
+    position: absolute;
+    top: 60px;
+    right: 88px;
+    display: flex;
+    gap: 12px;
+  }
+  .modes span {
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    border: 1px solid var(--panel-2);
+    color: var(--muted);
+    background: var(--panel);
+  }
+  .modes span.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+  <div class="modes"><span class="active">Solo</span><span>Duell</span></div>
+  <div class="brand">
+    <span class="bolt">&#9889;</span>
+    <h1>Reaktions-Duell</h1>
+  </div>
+  <p class="tagline">Warte auf Gr&uuml;n &ndash; dann so schnell wie m&ouml;glich.</p>
+  <div class="bar">
+    <div class="wait">WARTE&hellip;</div>
+    <div class="go">JETZT!</div>
+  </div>
+  <div class="url">kamerpascal-creator.github.io/reaktions-duell</div>
+</body>
+</html>
