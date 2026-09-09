@@ -32,6 +32,10 @@ Danach im Browser `http://localhost:8000` öffnen.
 
 Ergebnisse der letzten 10 Solo-Versuche werden lokal im Browser (`localStorage`) gespeichert.
 
+## Changelog
+
+Alle Änderungen sind in [CHANGELOG.md](CHANGELOG.md) dokumentiert.
+
 ## Lizenz
 
 [MIT](LICENSE)
