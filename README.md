@@ -32,6 +32,17 @@ Danach im Browser `http://localhost:8000` öffnen.
 
 Ergebnisse der letzten 10 Solo-Versuche werden lokal im Browser (`localStorage`) gespeichert.
 
+## Mitmachen
+
+Fehler, Ideen oder Verbesserungen sind willkommen:
+
+1. Bug oder Vorschlag als [Issue](https://github.com/kamerpascal-creator/reaktions-duell/issues) melden.
+2. Für Code-Änderungen einen Branch anlegen, Änderung committen und einen Pull Request gegen `main` öffnen.
+3. Vor dem PR `index.html` im Browser öffnen und Solo- und Duell-Modus kurz durchspielen.
+4. Nutzersichtbare Änderungen unter „Unveröffentlicht" in [CHANGELOG.md](CHANGELOG.md) eintragen.
+
+Bitte im Rahmen bleiben: alles bleibt in der einen `index.html`, ohne Build-Schritt und ohne externe Abhängigkeiten (reines HTML/CSS/Vanilla-JS).
+
 ## Changelog
 
 Alle Änderungen sind in [CHANGELOG.md](CHANGELOG.md) dokumentiert.
