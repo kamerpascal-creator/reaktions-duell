@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Reaktions-Duell</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --panel: #1a1f36;
+    --panel-2: #232a4a;
+    --text: #e8ebff;
+    --muted: #9aa3c7;
+    --accent: #6c7cff;
+    --wait: #d23b52;
+    --wait-dark: #7d1f2e;
+    --go: #2fbf71;
+    --go-dark: #16663d;
+    --gold: #ffd15c;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    padding: 24px 16px 40px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1 {
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  h1 .bolt { color: var(--gold); }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+
+  .card {
+    width: 100%;
+    max-width: 720px;
+    background: var(--panel);
+    border: 1px solid var(--panel-2);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* Mode switch */
+  .modes {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .modes button {
+    flex: 1;
+    background: var(--panel);
+    color: var(--muted);
+    border: 1px solid var(--panel-2);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modes button.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* Stage */
+  .stage {
+    position: relative;
+    height: 340px;
+    display: flex;
+    cursor: pointer;
+    user-select: none;
+  }
+  .half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    transition: background 0.12s;
+    background: var(--panel-2);
+  }
+  .half + .half { border-left: 2px solid var(--bg); }
+  .solo .half + .half { display: none; }
+  .solo .half { border-left: none; }
+
+  .half.waiting { background: var(--wait); }
+  .half.waiting.dim { background: var(--wait-dark); }
+  .half.go { background: var(--go); }
+  .half.go.dim { background: var(--go-dark); }
+  .half.win { background: var(--go); }
+  .half.lose { background: var(--wait-dark); }
+
+  .big {
+    font-size: clamp(28px, 7vw, 48px);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+  .small {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 8px;
+    max-width: 260px;
+  }
+  .keycap {
+    display: inline-block;
+    min-width: 32px;
+    padding: 4px 8px;
+    margin-top: 12px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  /* Footer / stats */
+  .footer {
+    padding: 16px 18px;
+    border-top: 1px solid var(--panel-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    align-items: baseline;
+  }
+  .stat .n { font-size: 20px; font-weight: 800; }
+  .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .footer .spacer { flex: 1; }
+  .footer button {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--panel-2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .footer button:hover { color: var(--text); }
+
+  /* Leaderboard */
+  .board {
+    width: 100%;
+    max-width: 720px;
+    margin-top: 16px;
+  }
+  .board h2 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .board ol { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .board li {
+    display: flex;
+    justify-content: space-between;
+    background: var(--panel);
+    border: 1px solid var(--panel-2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .board li.best { border-color: var(--gold); color: var(--gold); }
+  .board li .rank { color: var(--muted); width: 24px; }
+  .board .empty { color: var(--muted); font-size: 13px; padding: 8px 2px; }
+
+  .hint { color: var(--muted); font-size: 12px; margin-top: 20px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1><span class="bolt">&#9889;</span> Reaktions-Duell</h1>
+  <p class="sub">Warte auf Gr&uuml;n &ndash; dann so schnell wie m&ouml;glich.</p>
+
+  <div class="modes">
+    <button id="mSolo" class="active">Solo</button>
+    <button id="mDuel">Duell (2 Spieler)</button>
+  </div>
+
+  <div class="card">
+    <div id="stage" class="stage solo">
+      <div class="half" id="halfL">
+        <div class="big" id="bigL">Bereit?</div>
+        <div class="small" id="smallL">Klick oder Leertaste zum Starten</div>
+        <div class="keycap" id="keyL" hidden>A</div>
+      </div>
+      <div class="half" id="halfR">
+        <div class="big" id="bigR">Bereit?</div>
+        <div class="small" id="smallR">Taste zum Starten</div>
+        <div class="keycap" id="keyR" hidden>L</div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="stat"><div class="n" id="sLast">&ndash;</div><div class="l">Letzte</div></div>
+      <div class="stat"><div class="n" id="sBest">&ndash;</div><div class="l">Best</div></div>
+      <div class="stat"><div class="n" id="sAvg">&ndash;</div><div class="l">&Oslash; (10)</div></div>
+      <div class="stat" id="scoreWrap" hidden><div class="n" id="sScore">0 : 0</div><div class="l">Punkte</div></div>
+      <div class="spacer"></div>
+      <button id="resetBtn">Zur&uuml;cksetzen</button>
+    </div>
+  </div>
+
+  <div class="board" id="board">
+    <h2>Bestenliste &mdash; letzte 10 Solo-Versuche</h2>
+    <ol id="boardList"></ol>
+  </div>
+
+  <p class="hint">Tipp: Ein Klick w&auml;hrend Rot = Fehlstart. Im Duell gewinnt dann der andere die Runde.</p>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORE_KEY = "reaktionsduell.scores.v1";
+
+  var stage = document.getElementById("stage");
+  var halfL = document.getElementById("halfL");
+  var halfR = document.getElementById("halfR");
+  var bigL = document.getElementById("bigL");
+  var bigR = document.getElementById("bigR");
+  var smallL = document.getElementById("smallL");
+  var smallR = document.getElementById("smallR");
+  var keyL = document.getElementById("keyL");
+  var keyR = document.getElementById("keyR");
+
+  var mSolo = document.getElementById("mSolo");
+  var mDuel = document.getElementById("mDuel");
+
+  var sLast = document.getElementById("sLast");
+  var sBest = document.getElementById("sBest");
+  var sAvg = document.getElementById("sAvg");
+  var sScore = document.getElementById("sScore");
+  var scoreWrap = document.getElementById("scoreWrap");
+  var resetBtn = document.getElementById("resetBtn");
+  var boardList = document.getElementById("boardList");
+  var board = document.getElementById("board");
+
+  // ---- state ----
+  var mode = "solo";           // "solo" | "duel"
+  var phase = "idle";          // idle | waiting | go | result
+  var greenAt = 0;             // performance.now() when it turned green
+  var timer = null;
+  var duelScore = { L: 0, R: 0 };
+  var duelReacted = { L: null, R: null };
+
+  var scores = loadScores();
+  renderStats();
+  renderBoard();
+
+  // ---- helpers ----
+  function loadScores() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter(function (n) { return typeof n === "number"; }) : [];
+    } catch (e) { return []; }
+  }
+  function saveScores() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(scores.slice(-10))); } catch (e) {}
+  }
+  function randDelay() { return 1400 + Math.random() * 3600; } // 1.4s - 5.0s
+  function clearTimer() { if (timer) { clearTimeout(timer); timer = null; } }
+
+  function renderStats() {
+    var last10 = scores.slice(-10);
+    sLast.textContent = scores.length ? scores[scores.length - 1] + " ms" : "–";
+    sBest.textContent = scores.length ? Math.min.apply(null, scores) + " ms" : "–";
+    if (last10.length) {
+      var avg = Math.round(last10.reduce(function (a, b) { return a + b; }, 0) / last10.length);
+      sAvg.textContent = avg + " ms";
+    } else {
+      sAvg.textContent = "–";
+    }
+    sScore.textContent = duelScore.L + " : " + duelScore.R;
+  }
+
+  function renderBoard() {
+    boardList.innerHTML = "";
+    var last10 = scores.slice(-10).slice().reverse();
+    if (!last10.length) {
+      var li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = "Noch keine Versuche.";
+      boardList.appendChild(li);
+      return;
+    }
+    var best = Math.min.apply(null, last10);
+    last10.forEach(function (ms, i) {
+      var li = document.createElement("li");
+      if (ms === best) li.className = "best";
+      li.innerHTML = '<span><span class="rank">' + (i + 1) + '.</span> ' +
+        (ms === best ? "&#9733; " : "") + '</span><span>' + ms + ' ms</span>';
+      boardList.appendChild(li);
+    });
+  }
+
+  // ---- rendering the stage ----
+  function setHalf(el, cls, big, small) {
+    el.className = "half" + (cls ? " " + cls : "");
+    if (big != null) el.querySelector(".big").textContent = big;
+    if (small != null) el.querySelector(".small").textContent = small;
+  }
+
+  function resetStageText() {
+    phase = "idle";
+    clearTimer();
+    if (mode === "solo") {
+      setHalf(halfL, "", "Bereit?", "Klick oder Leertaste zum Starten");
+    } else {
+      duelReacted = { L: null, R: null };
+      setHalf(halfL, "", "Bereit?", "Spieler A");
+      setHalf(halfR, "", "Bereit?", "Spieler L");
+    }
+  }
+
+  // ---- game flow ----
+  function startRound() {
+    if (phase === "waiting" || phase === "go") return;
+    phase = "waiting";
+    duelReacted = { L: null, R: null };
+    if (mode === "solo") {
+      setHalf(halfL, "waiting", "Warte…", "");
+    } else {
+      setHalf(halfL, "waiting", "Warte…", "");
+      setHalf(halfR, "waiting", "Warte…", "");
+    }
+    clearTimer();
+    timer = setTimeout(goGreen, randDelay());
+  }
+
+  function goGreen() {
+    phase = "go";
+    greenAt = performance.now();
+    if (mode === "solo") {
+      setHalf(halfL, "go", "JETZT!", "");
+    } else {
+      setHalf(halfL, "go", "JETZT!", "");
+      setHalf(halfR, "go", "JETZT!", "");
+    }
+  }
+
+  function falseStart(who) {
+    clearTimer();
+    phase = "result";
+    if (mode === "solo") {
+      setHalf(halfL, "lose", "Fehlstart!", "Zu früh. Nochmal?");
+    } else {
+      var winner = who === "L" ? "R" : "L";
+      duelScore[winner]++;
+      var loserHalf = who === "L" ? halfL : halfR;
+      var winHalf = who === "L" ? halfR : halfL;
+      setHalf(loserHalf, "lose", "Fehlstart!", "");
+      setHalf(winHalf, "win", "Punkt!", "Gegner war zu früh");
+      renderStats();
+    }
+  }
+
+  function soloReact() {
+    var ms = Math.round(performance.now() - greenAt);
+    phase = "result";
+    scores.push(ms);
+    scores = scores.slice(-50);
+    saveScores();
+    var msg = ms < 200 ? "Blitzschnell!" : ms < 300 ? "Stark." : ms < 400 ? "Solide." : "Geht besser.";
+    setHalf(halfL, "win", ms + " ms", msg + " Klick für nächste Runde.");
+    renderStats();
+    renderBoard();
+  }
+
+  function duelReact(who) {
+    if (duelReacted[who] != null) return;
+    duelReacted[who] = Math.round(performance.now() - greenAt);
+    var other = who === "L" ? "R" : "L";
+    // first valid reaction wins the round immediately
+    duelScore[who]++;
+    phase = "result";
+    var meHalf = who === "L" ? halfL : halfR;
+    var otHalf = who === "L" ? halfR : halfL;
+    setHalf(meHalf, "win", duelReacted[who] + " ms", "Runde gewonnen!");
+    setHalf(otHalf, "lose", "", "zu langsam");
+    renderStats();
+  }
+
+  // ---- input ----
+  function handleActivate(side) {
+    // side: "L" | "R" | null (null = generic pointer in solo)
+    if (mode === "solo") {
+      if (phase === "idle" || phase === "result") { startRound(); return; }
+      if (phase === "waiting") { falseStart("L"); return; }
+      if (phase === "go") { soloReact(); return; }
+      return;
+    }
+    // duel
+    if (side == null) return;
+    if (phase === "idle" || phase === "result") { startRound(); return; }
+    if (phase === "waiting") { falseStart(side); return; }
+    if (phase === "go") { duelReact(side); return; }
+  }
+
+  // pointer on the stage
+  halfL.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    handleActivate("L");
+  });
+  halfR.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    handleActivate("R");
+  });
+
+  // keyboard
+  window.addEventListener("keydown", function (e) {
+    if (e.repeat) return;
+    var k = e.key.toLowerCase();
+    if (mode === "solo") {
+      if (k === " " || k === "spacebar" || k === "enter") {
+        e.preventDefault();
+        handleActivate(null);
+      }
+    } else {
+      if (k === "a") { e.preventDefault(); handleActivate("L"); }
+      else if (k === "l") { e.preventDefault(); handleActivate("R"); }
+    }
+  });
+
+  // ---- mode switching ----
+  function setMode(next) {
+    mode = next;
+    clearTimer();
+    phase = "idle";
+    mSolo.classList.toggle("active", mode === "solo");
+    mDuel.classList.toggle("active", mode === "duel");
+    stage.classList.toggle("solo", mode === "solo");
+    scoreWrap.hidden = mode !== "duel";
+    board.hidden = mode === "duel";
+    keyL.hidden = mode !== "duel";
+    keyR.hidden = mode !== "duel";
+    duelScore = { L: 0, R: 0 };
+    renderStats();
+    resetStageText();
+  }
+  mSolo.addEventListener("click", function () { setMode("solo"); });
+  mDuel.addEventListener("click", function () { setMode("duel"); });
+
+  // ---- reset ----
+  resetBtn.addEventListener("click", function () {
+    if (mode === "solo") {
+      scores = [];
+      saveScores();
+      renderStats();
+      renderBoard();
+    } else {
+      duelScore = { L: 0, R: 0 };
+      renderStats();
+    }
+    resetStageText();
+  });
+
+  // init
+  setMode("solo");
+})();
+</script>
+</body>
+</html>
