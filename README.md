@@ -2,6 +2,8 @@
 
 Ein kleines Reaktionszeit-Spiel (Solo & Duell) in einer einzigen HTML-Datei.
 
+![Screenshot des Spiels im Solo-Modus](docs/screenshot.png)
+
 ## Starten
 
 Es gibt keinen Build-Schritt und keine Abhängigkeiten – reines HTML/CSS/JS.
